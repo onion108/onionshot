@@ -3,7 +3,7 @@ name = "onionshot"
 version = "0.1.0"
 edition = "2024"
 description = "Screenshot utility for Hyprland"
-license = "wtfpl"
+license-file = "LICENSE"
 repository = "https://www.github.com/onion108/onionshot"
 
 [dependencies]
