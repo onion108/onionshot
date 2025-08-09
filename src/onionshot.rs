@@ -79,6 +79,7 @@ pub fn region_shot(args: &ApplicationArgs) {
         grim(&tmppath);
         let _f = freeze_screen();
         let Some(geometry) = slurp_geometry() else {
+            _ = std::fs::remove_file(&tmppath);
             return
         };
         let scale = get_scale();
@@ -90,14 +91,17 @@ pub fn region_shot(args: &ApplicationArgs) {
         };
         println!("{:?}", geometry);
         let Ok(grimmed) = OpenOptions::new().read(true).open(&tmppath) else {
+            _ = std::fs::remove_file(&tmppath);
             return
         };
         if let Err(_) = image::load(BufReader::new(grimmed), image::ImageFormat::Png).map(|x| x.crop_imm(actual_geometry.x as u32, actual_geometry.y as u32, actual_geometry.w, actual_geometry.h)).and_then(|x| x.save(&tmppath)) {
+            _ = std::fs::remove_file(&tmppath);
             return
         }
         save_image(&tmppath, &picpath, args.storage);
     } else {
         let Some(geometry) = slurp_geometry() else {
+            _ = std::fs::remove_file(&tmppath);
             return
         };
         grim_with_geometry(&tmppath, geometry);
