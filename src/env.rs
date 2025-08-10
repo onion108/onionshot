@@ -12,4 +12,3 @@ pub fn ensure_screenshot_dir() {
         std::fs::create_dir_all(screenshot_dir()).expect("failed to create screenshot directories");
     }
 }
-

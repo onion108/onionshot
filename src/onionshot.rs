@@ -2,7 +2,19 @@ use std::{env::temp_dir, fs::OpenOptions, io::BufReader, path::Path};
 
 use chrono::{Datelike, Timelike};
 
-use crate::{argparse::{ApplicationArgs, StorageMode}, env::{ensure_screenshot_dir, screenshot_dir}, external::{clipboard::copy_png, common::Geometry, freeze::freeze_screen, grim::{grim, grim_with_geometry}, hyprctl::{get_active_window, get_scale}, notify::{notify_clipboard_save, notify_save_fail, notify_screenshot_save}, slurp::slurp_geometry}};
+use crate::{
+    argparse::{ApplicationArgs, StorageMode},
+    env::{ensure_screenshot_dir, screenshot_dir},
+    external::{
+        clipboard::copy_png,
+        common::Geometry,
+        freeze::freeze_screen,
+        grim::{grim, grim_with_geometry},
+        hyprctl::{get_active_window, get_scale},
+        notify::{notify_clipboard_save, notify_save_fail, notify_screenshot_save},
+        slurp::slurp_geometry,
+    },
+};
 
 fn generate_image_name() -> String {
     let current_time = chrono::Local::now();
@@ -63,7 +75,7 @@ pub fn active_window_shot(args: &ApplicationArgs) {
     let name = generate_image_name();
     let picpath = screenshot_dir().join(&name);
     let tmppath = temp_dir().join(&name);
-    
+
     let geometry = get_active_window();
     grim_with_geometry(&tmppath, geometry);
     save_image(&tmppath, &picpath, args.storage);
@@ -80,7 +92,7 @@ pub fn region_shot(args: &ApplicationArgs) {
         let _f = freeze_screen();
         let Some(geometry) = slurp_geometry() else {
             _ = std::fs::remove_file(&tmppath);
-            return
+            return;
         };
         let scale = get_scale();
         let actual_geometry = Geometry {
@@ -92,20 +104,29 @@ pub fn region_shot(args: &ApplicationArgs) {
         println!("{:?}", geometry);
         let Ok(grimmed) = OpenOptions::new().read(true).open(&tmppath) else {
             _ = std::fs::remove_file(&tmppath);
-            return
+            return;
         };
-        if let Err(_) = image::load(BufReader::new(grimmed), image::ImageFormat::Png).map(|x| x.crop_imm(actual_geometry.x as u32, actual_geometry.y as u32, actual_geometry.w, actual_geometry.h)).and_then(|x| x.save(&tmppath)) {
+        if let Err(_) = image::load(BufReader::new(grimmed), image::ImageFormat::Png)
+            .map(|x| {
+                x.crop_imm(
+                    actual_geometry.x as u32,
+                    actual_geometry.y as u32,
+                    actual_geometry.w,
+                    actual_geometry.h,
+                )
+            })
+            .and_then(|x| x.save(&tmppath))
+        {
             _ = std::fs::remove_file(&tmppath);
-            return
+            return;
         }
         save_image(&tmppath, &picpath, args.storage);
     } else {
         let Some(geometry) = slurp_geometry() else {
             _ = std::fs::remove_file(&tmppath);
-            return
+            return;
         };
         grim_with_geometry(&tmppath, geometry);
         save_image(&tmppath, &picpath, args.storage);
     }
 }
-

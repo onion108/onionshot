@@ -1,5 +1,9 @@
 use clap::Parser;
-use onionshot::{argparse::{ApplicationArgs, Mode}, depcheck::check_dep, onionshot::{active_window_shot, fullscreen_shot, region_shot}};
+use onionshot::{
+    argparse::{ApplicationArgs, Mode},
+    depcheck::check_dep,
+    onionshot::{active_window_shot, fullscreen_shot, region_shot},
+};
 
 fn main() {
     if cfg!(not(debug_assertions)) {
@@ -21,7 +25,7 @@ fn main() {
         } else {
             eprintln!("Missing dependencies: {}", missing.join(", "));
         }
-        return
+        return;
     }
 
     let args = ApplicationArgs::parse();

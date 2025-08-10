@@ -29,4 +29,3 @@ pub enum StorageMode {
     ClipboardOnly,
     Both,
 }
-

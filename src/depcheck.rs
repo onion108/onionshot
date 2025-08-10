@@ -32,7 +32,11 @@ pub fn check_dep() -> Option<Vec<&'static str>> {
     ];
 
     for checker in checkers {
-        let child = Command::new(checker.name).arg(checker.arg).stdout(Stdio::null()).stderr(Stdio::null()).spawn();
+        let child = Command::new(checker.name)
+            .arg(checker.arg)
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .spawn();
         if !check_comp(child) {
             missing_components.push(checker.name);
         }

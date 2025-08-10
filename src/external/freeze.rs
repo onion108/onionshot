@@ -1,4 +1,8 @@
-use std::{process::{Child, Command}, thread::sleep, time::Duration};
+use std::{
+    process::{Child, Command},
+    thread::sleep,
+    time::Duration,
+};
 
 use super::hyprctl::{hide_cursor, reload};
 
@@ -8,7 +12,11 @@ pub struct FreezeHandle {
 
 pub fn freeze_screen() -> FreezeHandle {
     hide_cursor();
-    let child = Command::new("hyprpicker").arg("-r").arg("-z").spawn().expect("failed to spawn hyprpicker");
+    let child = Command::new("hyprpicker")
+        .arg("-r")
+        .arg("-z")
+        .spawn()
+        .expect("failed to spawn hyprpicker");
     sleep(Duration::from_millis(100));
     reload();
     FreezeHandle { child }
@@ -16,7 +24,8 @@ pub fn freeze_screen() -> FreezeHandle {
 
 impl Drop for FreezeHandle {
     fn drop(&mut self) {
-        self.child.kill().expect("failed to kill hyprpicker somehow");
+        self.child
+            .kill()
+            .expect("failed to kill hyprpicker somehow");
     }
 }
-

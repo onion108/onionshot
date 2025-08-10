@@ -1,5 +1,5 @@
-pub mod depcheck;
 pub mod argparse;
+pub mod depcheck;
 pub mod env;
-pub mod onionshot;
 pub mod external;
+pub mod onionshot;

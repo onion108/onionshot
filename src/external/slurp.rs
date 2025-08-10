@@ -2,7 +2,6 @@ use std::process::{Command, Stdio};
 
 use super::common::Geometry;
 
-
 pub fn slurp_geometry() -> Option<Geometry> {
     let output = Command::new("slurp")
         .arg("-d")
@@ -12,11 +11,19 @@ pub fn slurp_geometry() -> Option<Geometry> {
         .output()
         .expect("failed to spawn slurp");
     if !output.status.success() {
-        return None
+        return None;
     }
 
-    let data = str::from_utf8(&output.stdout).expect("there shouldn't be anything non-utf8 in the output... right? right?? right???");
-    let nums = data.trim().split(' ').map(|x| x.parse::<i64>().expect("invalid output from slurp... what happened?")).collect::<Vec<_>>();
+    let data = str::from_utf8(&output.stdout)
+        .expect("there shouldn't be anything non-utf8 in the output... right? right?? right???");
+    let nums = data
+        .trim()
+        .split(' ')
+        .map(|x| {
+            x.parse::<i64>()
+                .expect("invalid output from slurp... what happened?")
+        })
+        .collect::<Vec<_>>();
     if nums.len() != 4 {
         panic!("slurp doesn't output 4 numbers");
     }
@@ -27,4 +34,3 @@ pub fn slurp_geometry() -> Option<Geometry> {
         h: nums[3] as u32,
     })
 }
-
