@@ -1,6 +1,6 @@
 [package]
 name = "onionshot"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 description = "Screenshot utility for Hyprland"
 license-file = "LICENSE"
