@@ -19,16 +19,18 @@ fn main() {
         }));
     }
 
-    if let Some(missing) = check_dep() {
-        if missing.len() == 1 {
-            eprintln!("Missing dependency: {}", missing[0]);
-        } else {
-            eprintln!("Missing dependencies: {}", missing.join(", "));
-        }
-        return;
-    }
-
     let args = ApplicationArgs::parse();
+
+    if !args.skip_depcheck {
+        if let Some(missing) = check_dep() {
+            if missing.len() == 1 {
+                eprintln!("Missing dependency: {}", missing[0]);
+            } else {
+                eprintln!("Missing dependencies: {}", missing.join(", "));
+            }
+            return;
+        }
+    }
 
     match args.mode {
         Mode::Fullscreen => {

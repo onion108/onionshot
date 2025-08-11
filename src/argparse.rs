@@ -14,6 +14,10 @@ pub struct ApplicationArgs {
     /// Storage mode
     #[arg(short, long, default_value = "both")]
     pub storage: StorageMode,
+
+    /// Skip dependency check on start
+    #[arg(long)]
+    pub skip_depcheck: bool,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, ValueEnum)]
