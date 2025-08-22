@@ -4,7 +4,7 @@ version = "0.1.1"
 edition = "2024"
 description = "Screenshot utility for Hyprland"
 license-file = "LICENSE"
-repository = "https://www.github.com/onion108/onionshot"
+repository = "https://www.codeberg.org/onion27/onionshot"
 
 [dependencies]
 chrono = "0.4.41"
