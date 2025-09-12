@@ -87,7 +87,7 @@ pub fn get_scale() -> f32 {
 
 pub fn hide_cursor() {
     Command::new("hyprctl")
-        .args(&["keyword", "cursor:inactive_timeout", "0.1"])
+        .args(&["keyword", "cursor:invisible", "true"])
         .spawn()
         .expect("failed to spawn hyprctl")
         .wait()

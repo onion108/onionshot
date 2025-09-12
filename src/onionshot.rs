@@ -101,7 +101,6 @@ pub fn region_shot(args: &ApplicationArgs) {
             w: (geometry.w as f32 * scale) as u32,
             h: (geometry.h as f32 * scale) as u32,
         };
-        println!("{:?}", geometry);
         let Ok(grimmed) = OpenOptions::new().read(true).open(&tmppath) else {
             _ = std::fs::remove_file(&tmppath);
             return;
