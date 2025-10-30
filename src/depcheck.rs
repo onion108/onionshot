@@ -26,7 +26,7 @@ pub fn check_dep() -> Option<Vec<&'static str>> {
         checker("hyprland", "--version"),
         checker("grim", "-h"),
         checker("slurp", "-h"),
-        checker("hyprpicker", "-h"),
+        checker("wayfreeze", "-h"),
         checker("wl-copy", "--help"),
         checker("notify-send", "--help"),
     ];

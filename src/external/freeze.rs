@@ -12,9 +12,8 @@ pub struct FreezeHandle {
 
 pub fn freeze_screen() -> FreezeHandle {
     hide_cursor();
-    let child = Command::new("hyprpicker")
-        .arg("-r")
-        .arg("-z")
+    let child = Command::new("wayfreeze")
+        .arg("--hide-cursor")
         .spawn()
         .expect("failed to spawn hyprpicker");
     sleep(Duration::from_millis(100));
