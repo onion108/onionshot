@@ -15,7 +15,7 @@ pub fn freeze_screen() -> FreezeHandle {
     let child = Command::new("wayfreeze")
         .arg("--hide-cursor")
         .spawn()
-        .expect("failed to spawn hyprpicker");
+        .expect("failed to spawn wayfreeze");
     sleep(Duration::from_millis(100));
     reload();
     FreezeHandle { child }

@@ -88,12 +88,13 @@ pub fn region_shot(args: &ApplicationArgs) {
     let tmppath = temp_dir().join(&name);
 
     if args.freeze {
-        grim(&tmppath);
+        let child = grim(&tmppath);
         let _f = freeze_screen();
         let Some(geometry) = slurp_geometry() else {
             _ = std::fs::remove_file(&tmppath);
             return;
         };
+        let _ = child.wait_with_output().expect("grim failed");
         let scale = get_scale();
         let actual_geometry = Geometry {
             x: (geometry.x as f32 * scale) as i32,
