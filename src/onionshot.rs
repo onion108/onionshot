@@ -66,7 +66,7 @@ pub fn fullscreen_shot(args: &ApplicationArgs) {
     let name = generate_image_name();
     let picpath = screenshot_dir().join(&name);
     let tmppath = temp_dir().join(&name);
-    grim(&tmppath);
+    grim(&tmppath).wait().expect("grim failed");
     save_image(&tmppath, &picpath, args.storage);
 }
 
@@ -88,12 +88,14 @@ pub fn region_shot(args: &ApplicationArgs) {
     let tmppath = temp_dir().join(&name);
 
     if args.freeze {
-        grim(&tmppath);
-        let _f = freeze_screen();
+        let mut child = grim(&tmppath);
+        let f = freeze_screen();
         let Some(geometry) = slurp_geometry() else {
             _ = std::fs::remove_file(&tmppath);
             return;
         };
+        drop(f);
+        child.wait().expect("grim failed");
         let scale = get_scale();
         let actual_geometry = Geometry {
             x: (geometry.x as f32 * scale) as i32,
