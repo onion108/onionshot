@@ -25,6 +25,6 @@ impl Drop for FreezeHandle {
     fn drop(&mut self) {
         self.child
             .kill()
-            .expect("failed to kill hyprpicker somehow");
+            .expect("failed to kill wayfreeze somehow");
     }
 }
