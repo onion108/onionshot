@@ -1,5 +1,7 @@
-use std::path::Path;
-use std::process::{Child, Command};
+use std::{
+    path::Path,
+    process::{Child, Command},
+};
 
 use super::common::Geometry;
 

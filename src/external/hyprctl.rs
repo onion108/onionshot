@@ -17,24 +17,35 @@ pub fn get_active_window() -> Geometry {
 
     let obj = json::parse(data).expect("hyprctl -j not returning json");
     if !obj.is_object() {
-        panic!("failed to parse hyprctl's active window output: not an object at top level");
+        panic!(
+            "failed to parse hyprctl's active window output: not an object at top level"
+        );
     }
     if !obj.has_key("at") {
-        panic!("failed to parse hyprctl's active window output: property `at' not found");
+        panic!(
+            "failed to parse hyprctl's active window output: property `at' not found"
+        );
     }
     if !obj.has_key("size") {
-        panic!("failed to parse hyprctl's active window output: property `size' not found");
+        panic!(
+            "failed to parse hyprctl's active window output: property `size' not found"
+        );
     }
 
     let at = &obj["at"];
     let size = &obj["size"];
 
-    if !(at.is_array() && at.len() == 2 && at.members().fold(true, |m, x| m && x.is_number())) {
+    if !(at.is_array()
+        && at.len() == 2
+        && at.members().fold(true, |m, x| m && x.is_number()))
+    {
         panic!(
             "failed to parse hyprctl's active window output: property `at' isn't an array of two numbers"
         );
     }
-    if !(size.is_array() && size.len() == 2 && size.members().fold(true, |m, x| m && x.is_number()))
+    if !(size.is_array()
+        && size.len() == 2
+        && size.members().fold(true, |m, x| m && x.is_number()))
     {
         panic!(
             "failed to parse hyprctl's active window output: property `size' isn't an array of two numbers"
@@ -63,7 +74,8 @@ pub fn get_active_screen() -> Geometry {
         panic!("non-utf8 fuck off");
     };
 
-    let workspace_obj = json::parse(data).expect("hyprctl -j not returning json");
+    let workspace_obj =
+        json::parse(data).expect("hyprctl -j not returning json");
     let monitor_id = workspace_obj["monitorID"]
         .as_usize()
         .expect("failed to parse hyprctl's active workspace output");
@@ -82,7 +94,8 @@ pub fn get_active_screen() -> Geometry {
         panic!("non-utf8 fuck off");
     };
 
-    let monitor = &json::parse(data).expect("hyprctl -j not returning json")[monitor_id];
+    let monitor =
+        &json::parse(data).expect("hyprctl -j not returning json")[monitor_id];
 
     let msg = "failed to parse hyprctl's monitor output";
 

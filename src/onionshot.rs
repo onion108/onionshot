@@ -10,7 +10,9 @@ use crate::{
         freeze::freeze_screen,
         grim::grim_with_geometry,
         hyprctl::{get_active_screen, get_active_window},
-        notify::{notify_clipboard_save, notify_save_fail, notify_screenshot_save},
+        notify::{
+            notify_clipboard_save, notify_save_fail, notify_screenshot_save,
+        },
         slurp::slurp_geometry,
     },
 };

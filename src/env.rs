@@ -9,6 +9,7 @@ pub fn screenshot_dir() -> PathBuf {
 
 pub fn ensure_screenshot_dir() {
     if !screenshot_dir().exists() {
-        std::fs::create_dir_all(screenshot_dir()).expect("failed to create screenshot directories");
+        std::fs::create_dir_all(screenshot_dir())
+            .expect("failed to create screenshot directories");
     }
 }

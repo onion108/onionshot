@@ -1,0 +1,8 @@
+max_width = 80
+condense_wildcard_suffixes = true
+hex_literal_case = "Upper"
+imports_granularity = "Crate"
+newline_style = "Unix"
+normalize_comments = true
+overflow_delimited_expr = true
+reorder_impl_items = true
