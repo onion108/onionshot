@@ -1,4 +1,4 @@
-use std::{env::temp_dir, fs::OpenOptions, io::BufReader, path::Path};
+use std::{env::temp_dir, path::Path};
 
 use chrono::{Datelike, Timelike};
 
@@ -7,10 +7,9 @@ use crate::{
     env::{ensure_screenshot_dir, screenshot_dir},
     external::{
         clipboard::copy_png,
-        common::Geometry,
         freeze::freeze_screen,
-        grim::{grim, grim_with_geometry},
-        hyprctl::{get_active_window, get_scale},
+        grim::grim_with_geometry,
+        hyprctl::{get_active_screen, get_active_window},
         notify::{notify_clipboard_save, notify_save_fail, notify_screenshot_save},
         slurp::slurp_geometry,
     },
@@ -66,7 +65,8 @@ pub fn fullscreen_shot(args: &ApplicationArgs) {
     let name = generate_image_name();
     let picpath = screenshot_dir().join(&name);
     let tmppath = temp_dir().join(&name);
-    grim(&tmppath).wait().expect("grim failed");
+    let geometry = get_active_screen();
+    grim_with_geometry(&tmppath, geometry);
     save_image(&tmppath, &picpath, args.storage);
 }
 
@@ -88,39 +88,12 @@ pub fn region_shot(args: &ApplicationArgs) {
     let tmppath = temp_dir().join(&name);
 
     if args.freeze {
-        let mut child = grim(&tmppath);
         let f = freeze_screen();
         let Some(geometry) = slurp_geometry() else {
-            _ = std::fs::remove_file(&tmppath);
             return;
         };
+        grim_with_geometry(&tmppath, geometry);
         drop(f);
-        child.wait().expect("grim failed");
-        let scale = get_scale();
-        let actual_geometry = Geometry {
-            x: (geometry.x as f32 * scale) as i32,
-            y: (geometry.y as f32 * scale) as i32,
-            w: (geometry.w as f32 * scale) as u32,
-            h: (geometry.h as f32 * scale) as u32,
-        };
-        let Ok(grimmed) = OpenOptions::new().read(true).open(&tmppath) else {
-            _ = std::fs::remove_file(&tmppath);
-            return;
-        };
-        if let Err(_) = image::load(BufReader::new(grimmed), image::ImageFormat::Png)
-            .map(|x| {
-                x.crop_imm(
-                    actual_geometry.x as u32,
-                    actual_geometry.y as u32,
-                    actual_geometry.w,
-                    actual_geometry.h,
-                )
-            })
-            .and_then(|x| x.save(&tmppath))
-        {
-            _ = std::fs::remove_file(&tmppath);
-            return;
-        }
         save_image(&tmppath, &picpath, args.storage);
     } else {
         let Some(geometry) = slurp_geometry() else {

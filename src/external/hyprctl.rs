@@ -1,9 +1,5 @@
 use super::common::Geometry;
-use std::{
-    process::{Command, Stdio},
-    thread,
-    time::Duration,
-};
+use std::process::{Command, Stdio};
 
 pub fn get_active_window() -> Geometry {
     let output = Command::new("hyprctl")
@@ -41,7 +37,7 @@ pub fn get_active_window() -> Geometry {
     if !(size.is_array() && size.len() == 2 && size.members().fold(true, |m, x| m && x.is_number()))
     {
         panic!(
-            "failed to parse hyprctl's active window output: property `at' isn't an array of two numbers"
+            "failed to parse hyprctl's active window output: property `size' isn't an array of two numbers"
         );
     }
     Geometry {
@@ -52,7 +48,27 @@ pub fn get_active_window() -> Geometry {
     }
 }
 
-pub fn get_scale() -> f32 {
+pub fn get_active_screen() -> Geometry {
+    // Get active output
+    let output = Command::new("hyprctl")
+        .arg("-j")
+        .arg("activeworkspace")
+        .stdout(Stdio::piped())
+        .output()
+        .expect("Failed to spawn hyprctl");
+    if !output.status.success() {
+        panic!("Failed to execute hyprctl");
+    }
+    let Ok(data) = str::from_utf8(&output.stdout) else {
+        panic!("non-utf8 fuck off");
+    };
+
+    let workspace_obj = json::parse(data).expect("hyprctl -j not returning json");
+    let monitor_id = workspace_obj["monitorID"]
+        .as_usize()
+        .expect("failed to parse hyprctl's active workspace output");
+
+    // Get active output's bound
     let output = Command::new("hyprctl")
         .arg("-j")
         .arg("monitors")
@@ -66,40 +82,20 @@ pub fn get_scale() -> f32 {
         panic!("non-utf8 fuck off");
     };
 
-    let obj = json::parse(data).expect("hyprctl -j not returning json");
-    if !obj.is_array() {
-        panic!("failed to parse hyprctl's monitors' output: not an array at top level");
+    let monitor = &json::parse(data).expect("hyprctl -j not returning json")[monitor_id];
+
+    let msg = "failed to parse hyprctl's monitor output";
+
+    let scale = monitor["scale"].as_f32().expect(msg);
+    let x = monitor["x"].as_i32().expect(msg);
+    let y = monitor["y"].as_i32().expect(msg);
+    let w = monitor["width"].as_f32().expect(msg) / scale;
+    let h = monitor["height"].as_f32().expect(msg) / scale;
+
+    Geometry {
+        x,
+        y,
+        w: w as u32,
+        h: h as u32,
     }
-
-    if !obj.members().fold(true, |m, x| {
-        m && x.is_object() && x.has_key("scale") && x.has_key("focused")
-    }) {
-        panic!(
-            "failed to parse hyprctl's monitors' output: top level is not an array of objects that have key `scale' and `focused'"
-        );
-    }
-    obj.members()
-        .find(|x| x["focused"].as_bool().unwrap_or(false))
-        .expect("failed to get focused monitor: no monitors are focused!?")["scale"]
-        .as_f32()
-        .expect("failed to parse hyprctl's monitors' output: field `scale' isn't a number")
-}
-
-pub fn hide_cursor() {
-    Command::new("hyprctl")
-        .args(&["keyword", "cursor:invisible", "true"])
-        .spawn()
-        .expect("failed to spawn hyprctl")
-        .wait()
-        .expect("failed to run hyprctl");
-    thread::sleep(Duration::from_millis(100));
-}
-
-pub fn reload() {
-    Command::new("hyprctl")
-        .arg("reload")
-        .spawn()
-        .expect("failed to spawn hyprctl")
-        .wait()
-        .expect("failed to run hyprctl");
 }

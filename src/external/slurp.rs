@@ -5,6 +5,8 @@ use super::common::Geometry;
 pub fn slurp_geometry() -> Option<Geometry> {
     let output = Command::new("slurp")
         .arg("-d")
+        .arg("-w")
+        .arg("0")
         .arg("-f")
         .arg("%x %y %w %h")
         .stdout(Stdio::piped())
