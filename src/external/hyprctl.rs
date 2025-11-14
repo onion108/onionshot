@@ -1,3 +1,5 @@
+use crate::external::common::is_number_array;
+
 use super::common::Geometry;
 use std::process::{Command, Stdio};
 
@@ -35,18 +37,12 @@ pub fn get_active_window() -> Geometry {
     let at = &obj["at"];
     let size = &obj["size"];
 
-    if !(at.is_array()
-        && at.len() == 2
-        && at.members().fold(true, |m, x| m && x.is_number()))
-    {
+    if !is_number_array(&at, 2) {
         panic!(
             "failed to parse hyprctl's active window output: property `at' isn't an array of two numbers"
         );
     }
-    if !(size.is_array()
-        && size.len() == 2
-        && size.members().fold(true, |m, x| m && x.is_number()))
-    {
+    if !is_number_array(&size, 2) {
         panic!(
             "failed to parse hyprctl's active window output: property `size' isn't an array of two numbers"
         );
